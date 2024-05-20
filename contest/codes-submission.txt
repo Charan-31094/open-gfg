@@ -1,0 +1,269 @@
+This Flow represents how a contest code submission can be automated
+
+first i would get the headers req to send the post req and check my account is working as expected
+Then i would run a server to fetch code soltuion from additonal account Code - [help]
+
+const express = require('express');
+const axios = require('axios');
+const path = require('path');
+const app = express();
+const port = 1070;
+
+app.use(express.static(path.join(__dirname, 'public')));
+
+app.get('/', (req, res) => {
+  res.sendFile(path.join(__dirname, 'public', 'index.html'));
+});
+
+const commonHeaders = { 
+  'host': 'practiceapi.geeksforgeeks.org', 
+  'connection': 'keep-alive', 
+  'cache-control': 'max-age=0', 
+  'sec-ch-ua': '"Not_A Brand";v="8", "Chromium";v="120", "Google Chrome";v="120"', 
+  'sec-ch-ua-mobile': '?0', 
+  'sec-ch-ua-platform': '"Windows"', 
+  'dnt': '1', 
+  'upgrade-insecure-requests': '1', 
+  'user-agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36', 
+  'accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.7', 
+  'sec-fetch-site': 'none', 
+  'sec-fetch-mode': 'navigate', 
+  'sec-fetch-user': '?1', 
+  'sec-fetch-dest': 'document', 
+  'accept-encoding': 'gzip, deflate, br', 
+  'accept-language': 'en-GB,en;q=0.9', 
+    'cookie': 'gfg_nluid=f8bd4f0686fa3a41a51b458ced09fb21; _gcl_au=1.1.1639456158.1709317678; _tgpc=30413d08-39c6-578c-9d7e-6b2054b48c93; _fbp=fb.1.1709317678561.781226683; gfg_ugen=96a1a08dcded48b7e695aed7c577dc04c982a4f7; gfg_utype=d9c4e99a174c9471bbbff15488d37a5f4f3607ea; __gpi=UID=00000d220c132529:T=1709374946:RT=1709374946:S=ALNI_MaIY0q6_JuHGV58wtNM5YhHZtn8RA; __gads=ID=6634d9d70d2b36b7:T=1709374946:RT=1709739213:S=ALNI_MZ_SC2OU4mPF-qJ0TKwh2WBIGXmPA; __eoi=ID=37f6f2d54a77b4c8:T=1709374946:RT=1709739213:S=AA-AfjbWjueemkT5FxvtgjSVRjAz; FCNEC=%5B%5B%22AKsRol9nrF--Y8WQlYcn4y_ivIy1XRcpf_wKo3FCzAK4aF6aftrNr4gT-yAl95RDC-sARvKzdxe2jk_IPj_KRM5C_YQz4QC3ZiS5vGIuXtpUANu4t0JI2qvyzPJBwt98fxSP_LV724AnlDN3aC-p6427WyDhLP4vGA%3D%3D%22%5D%5D; default_lang=java; g_state={"i_l":0}; _ga_EPYP889PQW=GS1.2.1711043853.48.0.1711043853.60.0.0; gfguserName=tixom2x57b%2FeyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiJ9.eyJpc3MiOiJodHRwczpcL1wvd3d3LmdlZWtzZm9yZ2Vla3Mub3JnXC8iLCJpYXQiOjE3MTUxMzUxMTgsImV4cCI6MTcyMjkxMTExOCwiaGFuZGxlIjoidGl4b20yeDU3YiIsInV1aWQiOiI0YjcyZGQ4MzQ5NjgwMWZkMjE1MjE0YTlhMzdkOGFhYiIsInByb2ZpbGVVcmwiOiJodHRwczpcL1wvbWVkaWEuZ2Vla3Nmb3JnZWVrcy5vcmdcL2ltZy1wcmFjdGljZVwvdXNlcl93ZWItMTU5ODQzMzIyOC5zdmciLCJpbnN0aXR1dGVJZCI6MzkyOSwiaW5zdGl0dXRlTmFtZSI6IktvbmVydSBMYWtzaG1haWFoIEVkdWNhdGlvbiBGb3VuZGF0aW9uIiwibmFtZSI6IiIsImlzSW50ZXJlc3RTZWxlY3RlZCI6ZmFsc2UsInB1aWQiOiJ1bTJFVDlrMjBDbz0iLCJhaWQiOiIzZ21lVHQ0eDF5aldmWkU9IiwicGEiOjF9.tYgxfaOAfnkzxZuq-uRGadNyay2vuFI_3NGza_OJAkF_XGpPXRfKxug-VjnhE6sMlsJWNbWWev7A6Zk0s3izri7zcXPZ2CY6toiqGsT2crRJqWKwcX7Q8Zq5tAUZikwVo4vVnl72CFGfXeWMt9NubuoaNoE_qye8py6Z18wVrN0uWVPiM_nwf4OUATwDXRb0ltL8SXMYtJzGrywsQ7PpXS4M0nUCFHO18TNH-xLmwD0Xzd792wGrX6BulZGeLF4TvWr8X1QJ09a9tqGd2Kj77x5XwuTrSv4FV1Zfz90vm3xvF8DBa2c3UAVUfP-NT0GIef6hNk7jjrcTxiEIa6nR-w; gfg_id5_identity=b093fbcc6f751d7c5f42ae46d406c2a8b1356008609a8ab11c927f2546c08c13; gfg_ugy=7e79a3af2634de6635e59c9404d251b3955d39f9; _tglksd=eyJzIjoiMjE1Y2JiMzQtZGQwNy01Yzg5LWE4YmQtYWZjNjQ5YzE3NzQ5Iiwic3QiOjE3MTUxMzUwOTE1NDgsInNvZCI6IihkaXJlY3QpIiwic29kdCI6MTcxMDg3MDg5NDY5Mywic29kcyI6ImMiLCJzb2RzdCI6MTcxNTEzNTEyMDA0OH0=; geeksforgeeks_consent_status=dismiss; _uetvid=7c71a3703df511ee8afd13123c4b93af; _ga_SZ454CLTZM=GS1.1.1715135090.209.1.1715135182.0.0.0; _clck=4oueg3%7C2%7Cflu%7C0%7C1521; _clsk=17f7iru%7C1715962194515%7C1%7C1%7Cv.clarity.ms%2Fcollect; _gid=GA1.2.1827541958.1715962195; udsession=e30:1s809c:o6BeU4ptJyKATmbvNNr5RBVj0siGTaJ8gplLEq49lCA; _ga_DWCCJLKX3X=GS1.1.1715962191.4.1.1715962230.21.0.0; gfg_theme=gfgThemeLight; _ga_6K5G5NTXFT=GS1.1.1715962237.7.0.1715962237.0.0.0; _ga=GA1.1.1240091899.1709317678', 
+}
+
+
+app.get('/code/', async (req, res) => {
+  const str = req.query.str;
+  console.log(str);
+
+  if (!str) {
+    return res.status(400).send('Query parameter "str" is required.');
+  }
+
+  const config = {
+    method: 'get',
+    maxBodyLength: Infinity,
+    url: `https://practiceapi.geeksforgeeks.org/api/latest/problems/${str}/hints/solution/`,
+    headers: commonHeaders
+  };
+
+  try {
+    const response = await axios.request(config);
+    res.json(response.data);
+  } catch (error) {
+    console.error(error);
+    res.status(500).send(error);
+  }
+});
+
+app.get('/metainfo/', async (req, res) => {
+  const str = req.query.str;
+
+  if (!str) {
+    return res.status(400).send('Query parameter "problemId" is required.');
+  }
+
+  const config = {
+    method: 'get',
+    url: `https://practiceapi.geeksforgeeks.org/api/latest/problems/${str}/metainfo/`,
+    headers: commonHeaders
+  };
+
+  try {
+    const response = await axios.request(config);
+    res.json(response.data);
+  } catch (error) {
+    console.error(error);
+    res.status(500).send(error);
+  }
+});
+
+app.get('/submissions/', async (req, res) => {
+  const str = req.query.str;
+
+  if (!str) {
+    return res.status(400).send('Query parameter "problemId" is required.');
+  }
+
+  const config = {
+    method: 'get',
+    url: `https://practiceapi.geeksforgeeks.org/api/latest/problems/${str}/submissions/`,
+    headers: commonHeaders
+  };
+
+  try {
+    const response = await axios.request(config);
+    res.json(response.data);
+  } catch (error) {
+    console.error(error);
+    res.status(500).send(error);
+  }
+});
+
+app.get('/sub-code/', async (req, res) => {
+  const subid = req.query.subid;
+
+  if ( !subid) {
+    return res.status(400).send('Query parameters "problemId" and "subId" are required.');
+  }
+
+  const config = {
+    method: 'get',
+    url: `https://practiceapi.geeksforgeeks.org/api/latest/problems/submissions/${subid}/`,
+    headers: commonHeaders
+  };
+
+  try {
+    const response = await axios.request(config);
+    res.json(response.data);
+  } catch (error) {
+    console.error(error);
+    res.status(500).send(error);
+  }
+});
+
+
+
+
+app.listen(port, () => {
+  console.log(`Server listening at http://localhost:${port}`);
+});
+
+
+Then after setting it up
+i would start the conetst and get conetst data from APi
+
+https://practiceapi.geeksforgeeks.org/api/latest/contest/${contest}/details/
+
+Then i would start submiitting the codes
+const fs = require('fs');
+const fetch = require('node-fetch');
+
+async function fetchCode(slug) {
+  const codeResponse = await fetch(`http://localhost:1070/code/?str=${slug}`);
+  const codeData = await codeResponse.json();
+
+  const metainfoResponse = await fetch(`http://localhost:1070/metainfo/?str=${slug}`);
+  const metainfoData = await metainfoResponse.json();
+
+  const preferredLanguages = ["java", "javascript", "c", "python", "cpp"];
+
+  for (const lang of preferredLanguages) {
+    const hint = codeData.results.hints.find(h => h.lang_text === lang);
+    if (hint && hint.full_func) {
+      const fullFunc = hint.full_func;
+      const initialUserCode = metainfoData.results.extra.initial_user_func[lang.toLowerCase()];
+      if (initialUserCode) {
+        let initialCode = initialUserCode.initial_code;
+        const userCode = initialUserCode.user_code;
+        const startCue = '//User function template for C++';
+        const endCue = '};';
+
+        const startIndex = initialCode.indexOf(startCue);
+        const endIndex = initialCode.indexOf(endCue, startIndex) + endCue.length;
+
+        if (startIndex !== -1 && endIndex !== -1) {
+          initialCode = initialCode.substring(0, startIndex) + initialCode.substring(endIndex);
+        }
+
+        const placeholder = '//Position this line where user code will be pasted.';
+        if (initialCode.includes(placeholder)) {
+          initialCode = initialCode.replace(placeholder, fullFunc);
+        } else {
+          initialCode = `${initialCode}\n${fullFunc}`;
+        }
+        return { combinedCode: initialCode, lang };
+      }
+    }
+  }
+  throw new Error(`No available code found for slug "${slug}" in the preferred languages.`);
+}
+
+function readJsonFile(filePath) {
+  return new Promise((resolve, reject) => {
+    fs.readFile(filePath, 'utf8', (err, data) => {
+      if (err) {
+        reject(err);
+      } else {
+        resolve(JSON.parse(data));
+      }
+    });
+  });
+}
+
+
+
+async function sendModifiedRequest(harData, combinedCode, slug, lang) {
+    const requestData = harData.log.entries[0].request;
+    const urlTemplate = harData.log.entries[0].request.url;
+    const url = urlTemplate.replace(/problems\/.*\/submit/, `problems/${slug}/submit`);
+    const method = requestData.method;
+    const headers = requestData.headers.reduce((acc, header) => {
+      const forbiddenHeaders = ['Host', 'Connection', 'Content-Length', 'User-Agent', 'Accept-Encoding', 'Content-Encoding', 'Transfer-Encoding'];
+      if (!forbiddenHeaders.includes(header.name)) {
+        acc[header.name] = header.value;
+      }
+      return acc;
+    }, {});
+  
+    const boundary = '--'+requestData.postData.mimeType.split('boundary=')[1].trim();
+    
+    const modifiedPostDataText = `${boundary}\r\n` +
+      `Content-Disposition: form-data; name="source"\r\n\r\nhttps://practice.geeksforgeeks.org\r\n` +
+      `${boundary}\r\n` +
+      `Content-Disposition: form-data; name="request_type"\r\n\r\nsolutionCheck\r\n` +
+      `${boundary}\r\n` +
+      `Content-Disposition: form-data; name="userCode"\r\n\r\n${combinedCode}\r\n` +
+      `${boundary}\r\n` +
+      `Content-Disposition: form-data; name="code"\r\n\r\n${combinedCode}\r\n` +
+      `${boundary}\r\n` +
+      `Content-Disposition: form-data; name="language"\r\n\r\n${lang}\r\n` +
+      `${boundary}--\r\n`;
+  
+    const response = await fetch(url, {
+      method: method,
+      headers: headers,
+      body: modifiedPostDataText
+    });
+    const text = await response.text();
+    console.log(text);
+  }
+
+function delay(ms) {
+    return new Promise(resolve => setTimeout(resolve, ms));
+  }
+
+  async function main() {
+    try {
+      const problemData = await readJsonFile('./json/contestdata.json');
+      const harData = await readJsonFile('./json/har.json');
+      const problemsToProcess = problemData.results.problem_data.problems.slice(0);
+      let counter = 0;
+      for (const problem of problemsToProcess) {
+        try {
+          const slug = problem.slug;
+          const { combinedCode, lang } = await fetchCode(slug);
+          await sendModifiedRequest(harData, combinedCode, slug, lang);
+  
+          counter++;
+          if (counter % 10 === 0) {
+            console.log('Waiting for 60 sec');
+            console.log('Processed', counter, 'problems');
+            await delay(60000);
+          }
+        } catch (error) {
+          console.error(`Error processing problem with slug "${problem.slug}":`, error);
+          console.log(`Skipping problem with slug "${problem.slug}" and continuing with next one.`);
+        }
+      }
+    } catch (error) {
+      console.error('Error:', error);
+    }
+  }
+
+
+  main();
