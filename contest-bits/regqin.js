@@ -1,5 +1,6 @@
-const fetch = require('node-fetch');
-const fs = require('fs');
+import fetch from 'node-fetch';
+import fs from 'fs';
+import { exec } from 'child_process';
 
 
 
@@ -98,8 +99,6 @@ const saveQuestionIds = async (detailsData) => {
   };
   const outputFile = './json/quiz_details.json';
   fs.writeFileSync(outputFile, JSON.stringify(outputJson, null, 2));
-
-const { exec } = require('child_process');
 
 exec('node qidin-qansidout.js', (error, stdout, stderr) => {
   if (error) {
